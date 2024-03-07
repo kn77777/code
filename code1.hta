@@ -30,9 +30,9 @@
             margin-top : 15px;
             margin-right: 10px;
 
-            width: 100px; /* ボタンの幅 */
-            height: 50px; /* ボタンの高さ */
-            font-size: 16px; /* テキストのフォントサイズ */
+            width: 100px;
+            height: 50px;
+            font-size: 16px;
         }
         .image-size{
             background-color: lightblue;
@@ -42,22 +42,34 @@
             margin-right: 10px;
         }
         #undoMark{
-            width: 100px; /* ボタンの幅 */
-            height: 50px; /* ボタンの高さ */
+            width: 100px;
+            height: 50px;
             font-size: 16px;
+            margin-left: 10px;
         }
         #redoMark{
             width: 100px;
             height: 50px;
             font-size: 16px;
+            margin-left: 5px;
         }
         #count{
             background-color: yellowgreen;
             font-size: 40px;
         }
     </style>
+    <script>
+        function changeBackgroundColor(selectElement) {
+            var selectedColor = selectElement.value;
+            selectElement.style.backgroundColor = selectedColor;
+        }
+        function setBackgroundColorOnLoad() {
+            var selectElement = document.getElementById('mark-color');
+            changeBackgroundColor(selectElement);
+        }
+    </script>
 </head>
-<body>
+<body onload="setBackgroundColorOnLoad()">
     <div class="image-size">
         <label for="image-width">画像サイズ (px):</label>
         <input type="number" id="image-width" value="1000">
@@ -66,10 +78,16 @@
         <div class="controller">
             <button id = "undoMark" onclick="undoMark()">戻る</button>
             <button id = "redoMark" onclick="redoMark()">進む</button>
+            <label for="mark-color">マークの色:</label>
+            <select id="mark-color" onchange="changeBackgroundColor(this)">
+                <option value="red">赤</option>
+                <option value="blue">青</option>
+                <option value="green">緑</option>
+                <option value="yellow">黄色</option>
+            </select>
             <button id = "countreset" onclick="removeMarks()">リセット</button>
             <label id="count" for="count">Count: <span id="click-count">0</span></label>
         </div>
-
     </div>
     <div id="image-container" onclick="placeMark(event)">
         <img id="clickable-image" src="target.png" alt="Clickable image" style="width: 1000px;">
@@ -87,7 +105,7 @@
         }
         var mark = { x: x, y: y };
         marksHistory.push(mark);
-        redoStack = []; // Clear redo stack on new action
+        redoStack = [];
         addMark(mark);
     }
 
@@ -96,6 +114,10 @@
         div.className = 'mark';
         div.style.left = mark.x + 'px';
         div.style.top = mark.y + 'px';
+
+        var selectedColor = document.getElementById('mark-color').value;
+        div.style.backgroundColor = selectedColor;
+
         document.getElementById('image-container').appendChild(div);
         updateCount();
     }
