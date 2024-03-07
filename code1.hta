@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Image Click Counter in HTA</title>
+    <hta:application
+        applicationname="Image Click Counter"
+        border="thin"
+        borderstyle="normal"
+        icon=""
+        singleinstance="yes"
+        sysmenu="yes"
+        windowstate="normal">
+    <style>
+        #image-container {
+            position: relative;
+            display: inline-block;
+        }
+        .mark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+        }
+        #countreset{
+            margin-left: 20px;
+        }
+        .history-controls button {
+            margin-top : 15px;
+            margin-right: 10px;
+
+            width: 100px; /* ボタンの幅 */
+            height: 50px; /* ボタンの高さ */
+            font-size: 16px; /* テキストのフォントサイズ */
+        }
+        .image-size{
+            background-color: lightblue;
+        }
+        .controller{
+            margin-top : 15px;
+            margin-right: 10px;
+        }
+        #undoMark{
+            width: 100px; /* ボタンの幅 */
+            height: 50px; /* ボタンの高さ */
+            font-size: 16px;
+        }
+        #redoMark{
+            width: 100px;
+            height: 50px;
+            font-size: 16px;
+        }
+        #count{
+            background-color: yellowgreen;
+            font-size: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-size">
+        <label for="image-width">画像サイズ (px):</label>
+        <input type="number" id="image-width" value="1000">
+        <button onclick="resizeImage()">変更</button>
+
+        <div class="controller">
+            <button id = "undoMark" onclick="undoMark()">戻る</button>
+            <button id = "redoMark" onclick="redoMark()">進む</button>
+            <button id = "countreset" onclick="removeMarks()">リセット</button>
+            <label id="count" for="count">Count: <span id="click-count">0</span></label>
+        </div>
+
+    </div>
+    <div id="image-container" onclick="placeMark(event)">
+        <img id="clickable-image" src="target.png" alt="Clickable image" style="width: 1000px;">
+    </div>
+
+<script>
+    var count = 0;
+    var marksHistory = []; // Holds the history of all marks
+    var redoStack = []; // Holds the redo actions
+
+    function placeMark(event) {
+        var x = event.offsetX - 5;
+        var y = event.offsetY - 5;
+        var mark = { x: x, y: y };
+        marksHistory.push(mark);
+        redoStack = []; // Clear redo stack on new action
+        addMark(mark);
+    }
+
+    function addMark(mark) {
+        var div = document.createElement('div');
+        div.className = 'mark';
+        div.style.left = mark.x + 'px';
+        div.style.top = mark.y + 'px';
+        document.getElementById('image-container').appendChild(div);
+        updateCount();
+    }
+
+    function updateCount() {
+        var marks = document.getElementById('image-container').getElementsByTagName('div');
+        count = 0;
+        for (var i = 0; i < marks.length; i++) {
+            if (marks[i].className === 'mark') {
+                count++;
+            }
+        }
+        document.getElementById('click-count').innerText = count;
+    }
+
+    function undoMark() {
+        document.getElementById("undoMark").disabled = true;
+        if (marksHistory.length > 0) {
+            redoStack.push(marksHistory.pop());
+            refreshMarks();
+        }
+        document.getElementById("undoMark").disabled = false;
+    }
+
+    function redoMark() {
+        document.getElementById("redoMark").disabled = true;
+        if (redoStack.length > 0) {
+            marksHistory.push(redoStack.pop());
+            refreshMarks();
+        }
+
+        document.getElementById("redoMark").disabled = false;
+    }
+
+    function refreshMarks() {
+        var container = document.getElementById('image-container');
+        var marks = container.getElementsByTagName('div');
+        for (var i = marks.length - 1; i >= 0; i--) {
+            if (marks[i].className === 'mark') {
+                container.removeChild(marks[i]);
+            }
+        }
+        if(marksHistory.length == 0){
+            document.getElementById('click-count').innerText = 0;
+        }
+        for (var i = 0; i < marksHistory.length; i++) {
+            addMark(marksHistory[i]);
+        }
+        document.getElementById("undoMark").disabled = false;
+        document.getElementById("redoMark").disabled = false;
+    }
+
+    function removeMarks() {
+        var container = document.getElementById('image-container');
+        var marks = container.getElementsByTagName('div');
+        for (var i = marks.length - 1; i >= 0; i--) {
+            if (marks[i].className === 'mark') {
+                container.removeChild(marks[i]);
+            }
+        }
+        marksHistory = [];
+        redoStack = [];
+        updateCount();
+    }
+
+    function resizeImage() {
+        var width = document.getElementById('image-width').value.replace(/[\s\u3000]/g, '');
+        if (width === '') {
+            alert('数値を入力してください。');
+            return false;
+        }else if (isNaN(Number(width))) {
+            alert('数値を入力してください。');
+            return false;
+        }
+        var image = document.getElementById('clickable-image');
+        image.style.width = width + 'px';
+        removeMarks();
+    }
+</script>
+
+</body>
+</html>
