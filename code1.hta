@@ -77,12 +77,14 @@
 
 <script>
     var count = 0;
-    var marksHistory = []; // Holds the history of all marks
-    var redoStack = []; // Holds the redo actions
-
+    var marksHistory = [];
+    var redoStack = [];
     function placeMark(event) {
         var x = event.offsetX - 5;
         var y = event.offsetY - 5;
+        if(x < 5 || y < 5){
+            return;
+        }
         var mark = { x: x, y: y };
         marksHistory.push(mark);
         redoStack = []; // Clear redo stack on new action
