@@ -1,5 +1,8 @@
 Option Explicit
-
+' C2 ~ C4 対象ファイル,コピー先フォルダ,ファルダー名
+' C6 ~ C10 ファイル名1.2.3.4.5
+' C12 ~ C13 キーワード1.2
+' G12 ~ G13 セル1.2
 Sub CopyFilesAndWriteKeywords()
     Dim SourceFilePath As String
     Dim DestinationFolderPath As String
