@@ -1,8 +1,9 @@
-Option Explicit
 ' C2 ~ C4 対象ファイル,コピー先フォルダ,ファルダー名
 ' C6 ~ C10 ファイル名1.2.3.4.5
 ' C12 ~ C13 キーワード1.2
 ' G12 ~ G13 セル1.2
+Option Explicit
+
 Sub CopyFilesAndWriteKeywords()
     Dim SourceFilePath As String
     Dim DestinationFolderPath As String
@@ -18,11 +19,13 @@ Sub CopyFilesAndWriteKeywords()
     Dim position2 As String
     Dim ExcelApp As Object
     Dim Workbook As Object
+    Dim RegExp As Object
     
     ' オブジェクト生成
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
     Set ExcelApp = CreateObject("Excel.Application")
-    
+    Set RegExp = CreateObject("VBScript.RegExp")
+
     ' シートから値を読み込む
     With ThisWorkbook.Sheets(1)
         SourceFilePath = .Range("C2").Value
@@ -32,9 +35,23 @@ Sub CopyFilesAndWriteKeywords()
         Keyword2 = .Range("C13").Value
         position1 = .Range("G12").Value
         position2 = .Range("G13").Value
-        
     End With
     
+    For i = 6 To 10
+        FileName = ThisWorkbook.Sheets(1).Range("C" & i).Value
+        If FileName <> "" Then
+            If Left(FileName, 1) = " " Or Left(FileName, 1) = "　" Then
+                MsgBox "ファイル名" & i - 5 & "は無効のファイル名です", vbCritical, "ファイル名エラー"
+                Exit Sub
+            End If
+        End If
+    Next i
+    
+    RegExp.Pattern = "^[A-Za-z]+\d+$"
+    If Not RegExp.Test(position1) Or Not RegExp.Test(position2) Then
+        MsgBox "セルの値が無効です", vbCritical, "形式エラー"
+        Exit Sub
+    End If
     ' 最終的なフォルダパスの生成
     FinalFolderPath = DestinationFolderPath & "\" & NewFolderName
     FileExtension = FileSystem.GetExtensionName(SourceFilePath)
@@ -70,8 +87,8 @@ Sub CopyFilesAndWriteKeywords()
     Set Workbook = Nothing
     Set ExcelApp = Nothing
     Set FileSystem = Nothing
+    Set RegExp = Nothing
     
     ' 完了メッセージ
     MsgBox "ファイルが作成されました。", vbInformation
 End Sub
-
