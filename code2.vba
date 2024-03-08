@@ -60,7 +60,7 @@ Sub CopyFilesAndWriteKeywords()
     If Not FileSystem.FolderExists(FinalFolderPath) Then
         FileSystem.CreateFolder (FinalFolderPath)
     Else
-        MsgBox "フォルダー名がすでに存在します。"
+        MsgBox "フォルダー名がすでに存在します", vbCritical, "作成エラー"
         Exit Sub
     
     End If
