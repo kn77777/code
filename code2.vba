@@ -10,6 +10,7 @@ Sub CopyFilesAndWriteKeywords()
     Dim NewFolderName As String
     Dim FinalFolderPath As String
     Dim FileExtension As String
+    Dim FileExtensionCopyFileName As String
     Dim FileSystem As Object
     Dim i As Integer
     Dim FileName As String
@@ -39,6 +40,11 @@ Sub CopyFilesAndWriteKeywords()
     
     For i = 6 To 10
         FileName = ThisWorkbook.Sheets("ファイルコピー").Range("C" & i).Value
+        FileExtensionCopyFileName = FileSystem.GetExtensionName(FileName)
+        If Not FileExtensionCopyFileName = "" Then
+            MsgBox "拡張子が入力されてます", vbCritical, "ファイル名エラー"
+            Exit Sub
+        End If
         If FileName <> "" Then
             If Left(FileName, 1) = " " Or Left(FileName, 1) = "　" Then
                 MsgBox "ファイル名" & i - 5 & "は無効のファイル名です", vbCritical, "ファイル名エラー"
@@ -49,9 +55,16 @@ Sub CopyFilesAndWriteKeywords()
     
     RegExp.Pattern = "^[A-Za-z]+\d+$"
     If Not RegExp.Test(position1) Or Not RegExp.Test(position2) Then
-        MsgBox "セルの値が無効です", vbCritical, "形式エラー"
+        MsgBox "セルの値が無効です", vbCritical, "セル形式エラー"
         Exit Sub
     End If
+    
+    ' ファイルが存在するか確認
+    If Not FileSystem.FileExists(SourceFilePath) Then
+        MsgBox "指定されたファイルが存在しません。", vbExclamation, "対象ファイルエラー"
+        Exit Sub
+    End If
+    
     ' 最終的なフォルダパスの生成
     FinalFolderPath = DestinationFolderPath & "\" & NewFolderName
     FileExtension = FileSystem.GetExtensionName(SourceFilePath)
@@ -60,7 +73,7 @@ Sub CopyFilesAndWriteKeywords()
     If Not FileSystem.FolderExists(FinalFolderPath) Then
         FileSystem.CreateFolder (FinalFolderPath)
     Else
-        MsgBox "フォルダー名がすでに存在します", vbCritical, "作成エラー"
+        MsgBox "フォルダー名がすでに存在します", vbCritical, "コピー先フォルダエラー"
         Exit Sub
     
     End If
@@ -70,8 +83,13 @@ Sub CopyFilesAndWriteKeywords()
         FileName = ThisWorkbook.Sheets("ファイルコピー").Range("C" & i).Value
         If FileName <> "" Then
             ' ファイルをコピー
-            FileSystem.CopyFile SourceFilePath, FinalFolderPath & "\" & FileName & "." & FileExtension
-            
+        On Error GoTo ErrorHandler
+                FileSystem.CopyFile SourceFilePath, FinalFolderPath & "\" & FileName & "." & FileExtension
+                GoTo NextJob
+ErrorHandler:
+    MsgBox "無効なファイル名です", vbExclamation, "ファイルコピーエラー"
+    Exit Sub
+NextJob:
             ' コピーしたファイルにキーワードを書き込む
             Set Workbook = ExcelApp.Workbooks.Open(FinalFolderPath & "\" & FileName)
             With Workbook
