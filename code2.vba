@@ -27,7 +27,7 @@ Sub CopyFilesAndWriteKeywords()
     Set RegExp = CreateObject("VBScript.RegExp")
 
     ' シートから値を読み込む
-    With ThisWorkbook.Sheets(1)
+    With ThisWorkbook.Sheets("ファイルコピー")
         SourceFilePath = .Range("C2").Value
         DestinationFolderPath = .Range("C3").Value
         NewFolderName = .Range("C4").Value
@@ -38,7 +38,7 @@ Sub CopyFilesAndWriteKeywords()
     End With
     
     For i = 6 To 10
-        FileName = ThisWorkbook.Sheets(1).Range("C" & i).Value
+        FileName = ThisWorkbook.Sheets("ファイルコピー").Range("C" & i).Value
         If FileName <> "" Then
             If Left(FileName, 1) = " " Or Left(FileName, 1) = "　" Then
                 MsgBox "ファイル名" & i - 5 & "は無効のファイル名です", vbCritical, "ファイル名エラー"
@@ -67,7 +67,7 @@ Sub CopyFilesAndWriteKeywords()
     
     ' C6:C10 のファイル名に対して処理
     For i = 6 To 10
-        FileName = ThisWorkbook.Sheets(1).Range("C" & i).Value
+        FileName = ThisWorkbook.Sheets("ファイルコピー").Range("C" & i).Value
         If FileName <> "" Then
             ' ファイルをコピー
             FileSystem.CopyFile SourceFilePath, FinalFolderPath & "\" & FileName & "." & FileExtension
