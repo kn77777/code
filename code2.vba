@@ -91,7 +91,7 @@ ErrorHandler:
             Exit Sub
 NextJob:
     ' コピーしたファイルにキーワードを書き込む
-            Set Workbook = ExcelApp.Workbooks.Open(SourceFilePath)
+            Set Workbook = ExcelApp.Workbooks.Open(FinalFolderPath & "\" & FileName)
             With Workbook
                 .Sheets(1).Range(position1).Value = Keyword1
                 .Sheets(1).Range(position2).Value = Keyword2
