@@ -83,15 +83,11 @@ Sub CopyFilesAndWriteKeywords()
         FileName = ThisWorkbook.Sheets("ファイルコピー").Range("C" & i).Value
         If FileName <> "" Then
             ' ファイルをコピー
-            On Error GoTo ErrorHandler
+
                 FileSystem.CopyFile SourceFilePath, FinalFolderPath & "\" & FileName & "." & FileExtension
-                GoTo NextJob
-ErrorHandler:
-            MsgBox "無効なファイル名です", vbExclamation, "ファイルコピーエラー"
-            Exit Sub
-NextJob:
+
     ' コピーしたファイルにキーワードを書き込む
-            Set Workbook = ExcelApp.Workbooks.Open(FinalFolderPath & "\" & FileName)
+            Set Workbook = ExcelApp.Workbooks.Open(FinalFolderPath & "\" & FileName & "." & FileExtension)
             With Workbook
                 .Sheets(1).Range(position1).Value = Keyword1
                 .Sheets(1).Range(position2).Value = Keyword2
