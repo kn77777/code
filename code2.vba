@@ -106,3 +106,50 @@ Sub CopyFilesAndWriteKeywords()
     ' 完了メッセージ
     MsgBox "ファイルが作成されました。", vbInformation
 End Sub
+
+
+Sub SelectFolder()
+
+    '変数宣言
+    Dim Folder As String
+    Dim Worksheet As Worksheet
+
+    'フォルダ選択ウィンドウ
+    With Application.FileDialog(msoFileDialogFolderPicker)
+        .Title = "フォルダを選択してください"
+        If .Show = -1 Then
+            Folder = .SelectedItems(1)
+        Else
+            Exit Sub
+        End If
+    End With
+
+
+    '結果入力
+    ThisWorkbook.Sheets("ファイルコピー").Range("C3").Value = Folder
+
+End Sub
+
+Sub SelectFile()
+    
+    '変数宣言
+    Dim FileDialog As FileDialog
+    
+    Set FileDialog = Application.FileDialog(msoFileDialogFilePicker)
+
+    'ファイル選択ウィンドウ
+    With FileDialog
+        .Title = "ファイルを選択してください"
+        .AllowMultiSelect = False
+        .Filters.Clear
+        .Filters.Add "All Files", "*.*"
+
+        If .Show = -1 Then
+            Dim SelectedFilePath As String
+            SelectedFilePath = .SelectedItems(1)
+
+            '結果入力
+            ThisWorkbook.Sheets("ファイルコピー").Range("C2").Value = SelectedFilePath
+        End If
+    End With
+End Sub
