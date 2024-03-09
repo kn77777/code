@@ -2,6 +2,12 @@
 'CommandButton1,2,3
 'TextBox1
 
+'Private Sub Workbook_Open()
+'   UserForm1.Show
+'End Sub
+
+
+
 Dim SetCount As Integer
 Dim SelectedRange As Range
 Dim ElementCount As Integer
