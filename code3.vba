@@ -1,3 +1,7 @@
+'number　ラベル
+'CommandButton1,2,3
+'TextBox1
+
 Dim SetCount As Integer
 Dim SelectedRange As Range
 Dim ElementCount As Integer
