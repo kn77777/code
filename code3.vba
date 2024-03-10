@@ -8,9 +8,10 @@
 
 
 
-Dim SetCount As Integer
 Dim SelectedRange As Range
 Dim ElementCount As Integer
+Dim SetCount As Integer
+
 
 Private Sub CommandButton1_Click()
     GetSelectedRangeValues
@@ -23,11 +24,10 @@ Sub GetSelectedRangeValues()
     ElementCount = SelectedRange.Count
     SetCount = 1
     TextBox1.Value = SelectedRange(SetCount)
-
 End Sub
 
 Private Sub CommandButton2_Click()
-    If SetCount = 1 Then
+    If SetCount = 1 Or SetCount = 0 Then
         Exit Sub
     End If
     SetCount = SetCount - 1
@@ -43,6 +43,10 @@ Private Sub CommandButton3_Click()
 End Sub
 
 Private Sub TextBox1_Change()
+    If SelectedRange Is Nothing Then
+        Exit Sub
+    End If
     SelectedRange(SetCount).Cells = TextBox1.Value
     number.Caption = SetCount
 End Sub
+
