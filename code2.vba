@@ -71,7 +71,12 @@ Sub CopyFilesAndWriteKeywords()
     
     ' フォルダが存在しなければ作成
     If Not FileSystem.FolderExists(FinalFolderPath) Then
-        FileSystem.CreateFolder (FinalFolderPath)
+        If Len(Dir(FinalFolderPath, vbDirectory)) > 0 Then
+            FileSystem.CreateFolder (FinalFolderPath)
+    Else
+        MsgBox "指定されたフォルダは存在しません。", vbCritical
+        Exit Sub
+    End If
     Else
         MsgBox "フォルダー名がすでに存在します", vbCritical, "コピー先フォルダエラー"
         Exit Sub
@@ -152,4 +157,24 @@ Sub SelectFile()
             ThisWorkbook.Sheets("ファイルコピー").Range("C2").Value = SelectedFilePath
         End If
     End With
+End Sub
+
+
+Sub OpenFolderFromCell()
+    Dim FolderPath As String
+    Dim ws As Worksheet
+    
+    Set ws = ThisWorkbook.Sheets("ファイルコピー") '適切なシート名に変更してください
+    
+    ' フォルダパスの取得
+    FolderPath = ws.Range("C3").Value
+    FolderPath = FolderPath & "\" & ws.Range("C4").Value
+    ' フォルダの存在確認
+    If Len(Dir(FolderPath, vbDirectory)) > 0 Then
+        ' フォルダが存在する場合、フォルダを開く
+        Shell "explorer.exe """ & FolderPath & """", vbNormalFocus
+    Else
+        ' フォルダが存在しない場合、エラーメッセージを表示
+        MsgBox "指定されたフォルダは存在しません。", vbCritical
+    End If
 End Sub
