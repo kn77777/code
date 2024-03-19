@@ -1,3 +1,6 @@
+'CommandButton1,2,3
+'Label1,2
+
 Dim SelectedRangeA As Range
 Dim SelectedRangeB As Range
 Dim Cell As Range
